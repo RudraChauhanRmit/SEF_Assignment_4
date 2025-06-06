@@ -9,11 +9,11 @@ import static org.junit.jupiter.api.Assertions.*;
 public class AddDemeritPointsTest {
 
     //Reset files before each test
-    @BeforeEach
-    public void clearFiles() throws IOException {
-        new FileWriter("persons.txt", false).close();           // clear person data
-        new FileWriter("demerit_points.txt", false).close();    // clear demerits
-    }
+   // @BeforeEach
+   // public void clearFiles() throws IOException {
+       // new FileWriter("persons.txt", false).close();           // clear person data
+      //  new FileWriter("demerit_points.txt", false).close();    // clear demerits
+  //  }
 
     //Test Case 1: Add valid demerit points for a person
     @Test
