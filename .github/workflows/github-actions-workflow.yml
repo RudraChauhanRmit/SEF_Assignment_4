@@ -1,0 +1,54 @@
+# This is a basic workflow to help you get started with Actions
+
+name: CI
+
+# Controls when the workflow will run
+on:
+  # Triggers the workflow on push or pull request events but only for the "master" branch
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+  # Allows you to run this workflow manually from the Actions tab
+  workflow_dispatch:
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  java-test: # Job name
+    runs-on: ubuntu-latest # Configures the job to run on the latest version of an Ubuntu Linux runner.  
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        # The uses keyword specifies that this step will run v4 of the actions/checkout action. 
+        # This is an action that checks out your repository onto the runner,
+        #  allowing you to run scripts or other actions against your code (such as build and test tools). 
+        # You should use the checkout action any time your workflow will use the repository's code.
+      
+      - name: Setup java # Install Java on the runner
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          # Changed from 'adopt' to 'temurin' as adopt is deprecated
+          java-version: '21'  # The version of Java to install in the job runner.
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v3
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-m2
+
+      - name: Run tests
+        run: mvn clean test 
+        # This step runs the command mvn test, which is a Maven command to run the tests in your project.
+        # Maven is a build automation tool used primarily for Java projects. 
+        # The tests are defined in your project's source code and will be executed by Maven.
+
+      - name: Generate test report
+        uses: dorny/test-reporter@v1
+        if: success() || failure()    # run this step even if previous step failed
+        with:
+          name: Maven Tests
+          path: target/surefire-reports/*.xml
+          reporter: java-junit
